@@ -4,16 +4,15 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [Header("Enemy Stats")]
     public int maxHealth = 5;
     private int currentHealth;
 
-    [Header("Movement & Shooting")]
     public EnemyType type;
     public float moveSpeed = 3f;
-    public float range = 5f;             // distancia mínima para disparar
+    public float range = 5f;
     public Transform firePoint;
     public GameObject bulletPrefab;
+    public float bulletSpeed = 10f;
     public float timeBtwShoot = 1f;
     private float shootTimer = 0f;
 
@@ -48,16 +47,14 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // ===============================
     void NormalBehavior()
     {
-        // Quedarse quieto
         float distance = Vector2.Distance(transform.position, player.position);
         playerInRange = distance <= range;
 
         if (playerInRange)
         {
-            RotateToPlayer();
+           
             Shoot();
         }
     }
@@ -67,8 +64,7 @@ public class Enemy : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.position);
         playerInRange = distance <= range;
 
-        // Mover hacia adelante constantemente
-        transform.Translate(Vector2.up * moveSpeed * Time.deltaTime);
+        transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
 
         if (playerInRange)
         {
@@ -82,8 +78,7 @@ public class Enemy : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.position);
         playerInRange = distance <= range;
 
-        // Mover lentamente hacia adelante
-        transform.Translate(Vector2.up * moveSpeed * 0.5f * Time.deltaTime);
+        transform.Translate(Vector3.right * moveSpeed * 0.5f * Time.deltaTime);
 
         if (playerInRange)
         {
@@ -95,31 +90,31 @@ public class Enemy : MonoBehaviour
     void RotateToPlayer()
     {
         Vector2 dir = player.position - transform.position;
-        float angleZ = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, -angleZ);
+        float angleZ = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angleZ);
     }
+
+
 
     void Shoot()
     {
-        if (shootTimer < timeBtwShoot)
-        {
-            shootTimer += Time.deltaTime;
-        }
-        else
+        shootTimer += Time.deltaTime;
+        if (shootTimer >= timeBtwShoot)
         {
             shootTimer = 0f;
             if (bulletPrefab != null && firePoint != null)
             {
-                Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+                GameObject b = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+                Rigidbody2D rb = b.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                    rb.velocity = firePoint.right * bulletSpeed;
             }
         }
     }
 
-    // ===============================
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        Debug.Log("Enemy recibió daño: " + damage + " | Vida restante: " + currentHealth);
 
         if (currentHealth <= 0)
         {
@@ -129,11 +124,10 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        // Asignar puntaje según tipo
         switch (type)
         {
             case EnemyType.Normal:
-                ScoreManager.instance.AddScore(5);  // puntaje para enemigos normales
+                ScoreManager.instance.AddScore(5);
                 break;
             case EnemyType.Kamikase:
                 ScoreManager.instance.AddScore(10);
@@ -142,8 +136,6 @@ public class Enemy : MonoBehaviour
                 ScoreManager.instance.AddScore(20);
                 break;
         }
-
-        Debug.Log("Enemy murió | Puntaje total: " + ScoreManager.instance.score);
         Destroy(gameObject);
     }
 
@@ -154,7 +146,7 @@ public class Enemy : MonoBehaviour
             Player p = collision.gameObject.GetComponent<Player>();
             if (p != null)
             {
-                p.TakeDamage(1); // daño de colisión
+                p.TakeDamage(1);
             }
             Destroy(gameObject);
         }

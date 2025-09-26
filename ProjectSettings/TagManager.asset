@@ -8,11 +8,12 @@ TagManager:
   - WallLeft
   - Enemy
   - WallRight
+  - Bullet
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - PowerUp
   - Water
   - UI
   - Ground

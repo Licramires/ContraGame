@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Cannonn : MonoBehaviour
 {
-    [Header("Cannon Settings")]
-    public Transform firePoint;          // Punto desde donde dispara
-    public Bullets bulletPrefab;         // Prefab de la bala (Bullets.cs)
-    public float timeBtwShoot = 1f;      // Tiempo entre disparos
-    public float bulletSpeed = 7f;       // Velocidad de la bala
-    public float damage = 1f;            // Daño base
-    public bool criticalHit = false;     // Habilitar críticos
+
+    public Transform firePoint;          
+    public Bullets bulletPrefab;         
+    public float timeBtwShoot = 1f;     
+    public float bulletSpeed = 7f;       
+    public float damage = 1f;            
+    public bool criticalHit = false;     
 
     private float timer = 0f;
 
@@ -40,7 +40,7 @@ public class Cannonn : MonoBehaviour
             b.damage = damage;
             b.moveSpeed = bulletSpeed;
             b.criticalHit = criticalHit;
-            b.playerBullet = false; // bala del cañón
+            b.playerBullet = false; 
         }
     }
 }
